@@ -55,8 +55,8 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az config set extension.use_dynamic_install=yes_without_prompt
             az extension add --name containerapp
             az extension update --name containerapp
+            az --version
             az containerapp registry set -n kedsouza-ca -g kedsouza-ca --server kedsouzaacr.azurecr.io --username  ${{ secrets.KEDSOUZACA_REGISTRY_USERNAME }} --password ${{ secrets.KEDSOUZACA_REGISTRY_PASSWORD }}
             az containerapp update -n kedsouza-ca -g kedsouza-ca --image kedsouzaacr.azurecr.io/kedsouza-ca:latest
