@@ -1,0 +1,42 @@
+name: Trigger auto deployment for kedsouza-app
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ master ]
+    paths:
+    - '**'
+    - '.github/workflows/kedsouza-app-AutoDeployTrigger-399b3112-b7b8-4346-8f96-1ba38e7b4734.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:
+      
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.KEDSOUZAAPP_AZURE_CREDENTIALS }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          appSourcePath: ${{ github.workspace }} 
+          registryUrl: kedsouzaacr.azurecr.io
+          registryUsername: ${{ secrets.KEDSOUZAAPP_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.KEDSOUZAAPP_REGISTRY_PASSWORD }}
+          containerAppName: kedsouza-app
+          resourceGroup: kedsouza-ca
+          imageToBuild: kedsouzaacr.azurecr.io/kedsouza-app:${{ github.sha }}
+          dockerfilePath: Dockerfile
+
+     
+
